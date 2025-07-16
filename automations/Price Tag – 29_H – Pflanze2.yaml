@@ -1,0 +1,207 @@
+alias: Price Tag – 29_H – Pflanze2
+description: ""
+triggers:
+  - minutes: /20
+    trigger: time_pattern
+conditions:
+  - condition: time
+    after: "05:00:00"
+    before: "00:00:00"
+actions:
+  - alias: Pflanzenanzeige (vertikal)
+    data:
+      background: white
+      rotate: 270
+      payload:
+        - type: icon
+          value: mdi:spa-outline
+          x: 16
+          "y": 70
+          size: 100
+        - type: text
+          value: Geld-
+          font: ppb.ttf
+          x: 13
+          "y": 15
+          size: 27
+          color: black
+        - type: text
+          value: baum
+          font: ppb.ttf
+          x: 13
+          "y": 41
+          size: 27
+          color: black
+        - type: text
+          value: Wasser
+          font: rbm.ttf
+          x: 15
+          "y": 186
+          size: 15
+          color: black
+        - type: text
+          value: Dünger
+          font: rbm.ttf
+          x: 15
+          "y": 239
+          size: 15
+          color: black
+        - type: progress_bar
+          x_start: 15
+          y_start: 203
+          x_end: 113
+          y_end: 223
+          fill: >
+            {% set moisture = states('sensor.plant_sensor_02_moisture') %}
+
+            {% if moisture != 'unavailable' and moisture|int >= 7 and
+            moisture|int <= 50 %}
+              black
+            {% else %}
+              red
+            {% endif %}
+          outline: black
+          width: 1
+          progress: >-
+            {{ states('sensor.plant_sensor_02_moisture') if
+            states('sensor.plant_sensor_02_moisture') != 'unavailable' else 0 }}
+          direction: right
+          show_percentage: false
+        - type: icon
+          value: >
+            {% set moisture = states('sensor.plant_sensor_02_moisture') %}
+
+            {% if moisture != 'unavailable' and (moisture|int < 7 or
+            moisture|int > 50) %}
+              mdi:alert
+            {% else %}
+              mdi:check-bold
+            {% endif %}
+          x: 93
+          "y": 181
+          size: 20
+          color: >
+            {% set moisture = states('sensor.plant_sensor_02_moisture') %}
+
+            {% if moisture != 'unavailable' and (moisture|int < 7 or
+            moisture|int > 50) %}
+              red
+            {% else %}
+              black
+            {% endif %}
+        - type: progress_bar
+          x_start: 15
+          y_start: 256
+          x_end: 113
+          y_end: 276
+          fill: >
+            {% set conductivity = states('sensor.plant_sensor_02_conductivity')
+            %}
+
+            {% if conductivity != 'unavailable' and conductivity|int >= 300 and
+            conductivity|int <= 1000 %}
+              black
+            {% else %}
+              red
+            {% endif %}
+          outline: black
+          width: 1
+          progress: >
+            {% set conductivity = states('sensor.plant_sensor_02_conductivity')
+            %}
+
+            {% if conductivity != 'unavailable' %}
+              {% set value = conductivity|int %}
+              {% if value < 0 %}
+                0
+              {% elif value > 1300 %}
+                100
+              {% else %}
+                {{ ((value) / 1300 * 100) | round(0) }}
+              {% endif %}
+            {% else %}
+              0
+            {% endif %}
+          direction: right
+          show_percentage: false
+        - type: icon
+          value: >
+            {% set conductivity = states('sensor.plant_sensor_02_conductivity')
+            %}
+
+            {% if conductivity != 'unavailable' and (conductivity|int < 300 or
+            conductivity|int > 1000) %}
+              mdi:alert
+            {% else %}
+              mdi:check-bold
+            {% endif %}
+          x: 93
+          "y": 234
+          size: 20
+          color: >
+            {% set conductivity = states('sensor.plant_sensor_02_conductivity')
+            %}
+
+            {% if conductivity != 'unavailable' and (conductivity|int < 300 or
+            conductivity|int > 1000) %}
+              red
+            {% else %}
+              black
+            {% endif %}
+        - type: line
+          x_start: 22
+          x_end: 22
+          y_start: 209
+          y_end: 217
+          fill: |
+            {% set moisture = states('sensor.plant_sensor_02_moisture') %}
+            {% if moisture != 'unavailable' and moisture|int > 7 %}
+              white
+            {% else %}
+              black
+            {% endif %}
+        - type: line
+          x_start: 65
+          x_end: 65
+          y_start: 209
+          y_end: 217
+          fill: |
+            {% set moisture = states('sensor.plant_sensor_02_moisture') %}
+            {% if moisture != 'unavailable' and moisture|int > 50 %}
+              white
+            {% else %}
+              black
+            {% endif %}
+        - type: line
+          x_start: 38
+          x_end: 38
+          y_start: 262
+          y_end: 270
+          fill: >
+            {% set conductivity = states('sensor.plant_sensor_02_conductivity')
+            %}
+
+            {% if conductivity != 'unavailable' and conductivity|int > 300 %}
+              white
+            {% else %}
+              black
+            {% endif %}
+        - type: line
+          x_start: 91
+          x_end: 91
+          y_start: 262
+          y_end: 270
+          fill: >
+            {% set conductivity = states('sensor.plant_sensor_02_conductivity')
+            %}
+
+            {% if conductivity != 'unavailable' and conductivity|int > 1000 %}
+              white
+            {% else %}
+              black
+            {% endif %}
+    target:
+      device_id: e0e3860a13949742ca611f9e09b32a8b
+    enabled: true
+    action: open_epaper_link.drawcustom
+mode: single
